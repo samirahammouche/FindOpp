@@ -1,0 +1,37 @@
+[
+{
+  "model": "evenements.categorie",
+  "pk": 1,
+  "fields": {
+    "nom": "Bourse"
+  }
+},
+{
+  "model": "evenements.evenement",
+  "pk": 1,
+  "fields": {
+    "titre": "ecsel expo",
+    "description": "(Salon du E-Commerce et des Services en Ligne) est le plus grand salon dédié au commerce électronique et à l'économie numérique en Algérie et en Afrique",
+    "image": "https://www.aps.dz/fr/assets/article/a74b9c883657bb8c672db4f4751763db.webp",
+    "dateCreation": "2026-11-01",
+    "dateLimite": "2027-01-01",
+    "statut": "APPROUVEE",
+    "organisateurId": 1,
+    "categorie": 1
+  }
+},
+{
+  "model": "evenements.evenement",
+  "pk": 2,
+  "fields": {
+    "titre": "RAG",
+    "description": "this",
+    "image": "",
+    "dateCreation": "2026-11-01",
+    "dateLimite": "2027-02-02",
+    "statut": "BROUILLON",
+    "organisateurId": 2,
+    "categorie": 1
+  }
+}
+]
