@@ -1,6 +1,7 @@
 
 from django.urls import path
 from .views import (
+    OrganizerOnlyView,
     RegisterView,
     LoginView,
     MeView,
@@ -8,6 +9,7 @@ from .views import (
     LogoutView,
     ChangePasswordView,
 )
+from .views import AdminOnlyView, OrganizerOnlyView
 
 urlpatterns = [
     path("register/", RegisterView.as_view(), name="register"),
@@ -20,4 +22,6 @@ urlpatterns = [
         ChangePasswordView.as_view(),
         name="change-password"
     ),
+    path("admin-only/", AdminOnlyView.as_view(), name="admin-only"),
+    path("organizer-only/", OrganizerOnlyView.as_view(), name="organizer-only"),
 ]

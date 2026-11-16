@@ -10,7 +10,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.views import TokenRefreshView
-
+from .permissions import IsAdminUser, IsOrganizer
 from .serializers import ChangePasswordSerializer
 from .serializers import (
     RegisterSerializer,
@@ -88,4 +88,22 @@ class ChangePasswordView(APIView):
             {"message": "Password changed successfully."},
             status=status.HTTP_200_OK
         )
+class AdminOnlyView(APIView):
+    permission_classes = [IsAdminUser]
+
+    def get(self, request):
+        return Response({
+            "message": "Welcome Admin! You have access.",
+            "role": request.user.role
+        })
+
+
+class OrganizerOnlyView(APIView):
+    permission_classes = [IsOrganizer]
+
+    def get(self, request):
+        return Response({
+            "message": "Welcome Organizer! You have access.",
+            "role": request.user.role
+        })
 
