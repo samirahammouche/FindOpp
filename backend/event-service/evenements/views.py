@@ -1,10 +1,22 @@
 from django.utils import timezone
-from rest_framework import generics
+from rest_framework import generics, status
+from rest_framework.filters import OrderingFilter, SearchFilter
+from rest_framework.generics import get_object_or_404
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Evenement, StatutEvenement
-from .serializers import EvenementSerializer
+from .models import Categorie, Evenement, StatutEvenement
+from .permissions import IsAdminRole, IsOrganizer, IsOwner
+from .serializers import (CategorieSerializer, EvenementSerializer,
+                          EvenementWriteSerializer)
+
+# Statuts dans lesquels l'organisateur peut modifier son evenement
+STATUTS_MODIFIABLES = (StatutEvenement.BROUILLON, StatutEvenement.REJETEE)
+
+
+def reponse_conflit(message):
+    return Response({'detail': message}, status=status.HTTP_409_CONFLICT)
 
 
 def evenements_visibles():
@@ -20,11 +32,19 @@ def evenements_visibles():
 
 
 class EvenementListView(generics.ListAPIView):
-    """Le flux : triés par date limite."""
+    # /api/events/?search=salon&categorie=1&ordering=-dateCreation
     serializer_class = EvenementSerializer
+    filter_backends = [SearchFilter, OrderingFilter]
+    search_fields = ['titre', 'description', 'categorie__nom']
+    ordering_fields = ['dateLimite', 'dateCreation', 'titre']
+    ordering = ['dateLimite', '-dateCreation']
 
     def get_queryset(self):
-        return evenements_visibles()
+        queryset = evenements_visibles()
+        categorie = self.request.query_params.get('categorie')
+        if categorie and categorie.isdigit():
+            queryset = queryset.filter(categorie_id=int(categorie))
+        return queryset
 
 
 class EvenementDetailView(generics.RetrieveAPIView):
@@ -45,3 +65,15 @@ class SuggestionListView(APIView):
     def get(self, request):
         serializer = EvenementSerializer(evenements_visibles()[:6], many=True)
         return Response(serializer.data)
+
+
+class CategorieListCreateView(generics.ListCreateAPIView):
+    # GET: tout le monde. POST: administrateur seulement.
+    queryset = Categorie.objects.order_by('nom')
+    serializer_class = CategorieSerializer
+    pagination_class = None
+
+    def get_permissions(self):
+        if self.request.method == 'POST':
+            return [IsAdminRole()]
+        return [AllowAny()]
