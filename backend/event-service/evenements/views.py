@@ -141,4 +141,49 @@ class SoumettreView(APIView):
         return Response(EvenementSerializer(evenement).data)
 
 
-    
+class ModerationListView(generics.ListAPIView):
+    """L'admin liste les événements. Par défaut : ceux en attente."""
+    serializer_class = EvenementSerializer
+    permission_classes = [IsAdminRole]
+    filter_backends = [OrderingFilter]
+    ordering = ['dateCreation']
+
+    def get_queryset(self):
+        statut = self.request.query_params.get('statut', StatutEvenement.EN_ATTENTE)
+        return Evenement.objects.select_related('categorie').filter(statut=statut)
+
+
+class ModerationDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """L'admin voit, modifie ou supprime n'importe quel événement."""
+    queryset = Evenement.objects.select_related('categorie')
+    permission_classes = [IsAdminRole]
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return EvenementSerializer
+        return EvenementWriteSerializer
+
+
+class _ChangerStatutView(APIView):
+    """Base commune à approuver et rejeter. Le "_" au début dit : usage interne."""
+    permission_classes = [IsAdminRole]
+    nouveau_statut = None  # défini par les classes filles
+
+    def post(self, request, pk):
+        evenement = get_object_or_404(Evenement, pk=pk)
+        if evenement.statut != StatutEvenement.EN_ATTENTE:
+            return reponse_conflit(
+                f"Seul un événement EN_ATTENTE peut être traité "
+                f"(statut actuel : {evenement.statut})."
+            )
+        evenement.statut = self.nouveau_statut
+        evenement.save(update_fields=['statut'])
+        return Response(EvenementSerializer(evenement).data)
+
+
+class ApprouverView(_ChangerStatutView):
+    nouveau_statut = StatutEvenement.APPROUVEE
+
+
+class RejeterView(_ChangerStatutView):
+    nouveau_statut = StatutEvenement.REJETEE    

@@ -1,16 +1,22 @@
 from django.urls import path
-from .views import (EvenementListView, EvenementDetailView,
-                    SuggestionListView, CategorieListCreateView,
-                    MesEvenementsView, MonEvenementDetailView, SoumettreView)
+
+from . import views
 
 urlpatterns = [
     # Public
-    path('', EvenementListView.as_view()),
-    path('<int:pk>/', EvenementDetailView.as_view()),
-    path('suggestions/', SuggestionListView.as_view()),
-    path('categories/', CategorieListCreateView.as_view()),
+    path('', views.EvenementListView.as_view()),
+    path('<int:pk>/', views.EvenementDetailView.as_view()),
+    path('suggestions/', views.SuggestionListView.as_view()),
+    path('categories/', views.CategorieListCreateView.as_view()),
+
     # Organisateur
-    path('mine/', MesEvenementsView.as_view()),
-    path('mine/<int:pk>/', MonEvenementDetailView.as_view()),
-    path('mine/<int:pk>/submit/', SoumettreView.as_view()),
+    path('mine/', views.MesEvenementsView.as_view()),
+    path('mine/<int:pk>/', views.MonEvenementDetailView.as_view()),
+    path('mine/<int:pk>/submit/', views.SoumettreView.as_view()),
+
+    # Admin
+    path('moderation/', views.ModerationListView.as_view()),
+    path('moderation/<int:pk>/', views.ModerationDetailView.as_view()),
+    path('moderation/<int:pk>/approve/', views.ApprouverView.as_view()),
+    path('moderation/<int:pk>/reject/', views.RejeterView.as_view()),
 ]
