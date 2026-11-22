@@ -1,0 +1,123 @@
+/* Extra styles for the sign-up page. Base styles live in SignIn.css */
+
+.su-form {
+  margin: 0 auto;
+  padding-top: 28px;
+}
+.su-form .si-sub {
+  margin-bottom: 24px;
+}
+.su-form .si-input {
+  margin-bottom: 18px;
+}
+
+.su-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 14px;
+}
+.su-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.si-select {
+  appearance: none;
+  padding-right: 28px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none' stroke='%23101b35' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1 1l4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 11px center;
+  cursor: pointer;
+}
+
+.si-hint {
+  margin: -12px 0 16px;
+  font-size: 8px;
+  color: var(--muted);
+}
+.su-col .si-hint {
+  margin-top: -12px;
+}
+.su-tight {
+  margin-bottom: 6px !important;
+}
+.su-hintgap {
+  margin-top: 0;
+}
+
+/* Upload box */
+.su-drop {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding: 14px;
+  border: 1.5px dashed #c4cde0;
+  border-radius: 12px;
+  background: #f7f8fb;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.su-drop:hover {
+  border-color: var(--navy);
+  background: #fff;
+}
+.su-drop:focus-visible {
+  outline: 2px solid var(--navy);
+  outline-offset: 2px;
+}
+.su-drop__icon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: #dbe6f7;
+  flex-shrink: 0;
+}
+.su-drop__text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  font-size: 8px;
+  color: var(--muted);
+}
+.su-drop__text strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.su-terms {
+  margin-top: 14px;
+}
+.su-signin {
+  margin-top: 22px;
+}
+
+/* Link styled as the main button (success screen) */
+.su-btnlink {
+  display: grid;
+  place-items: center;
+  text-decoration: none;
+}
+
+@media (max-width: 860px) {
+  .su-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .si-hint,
+  .su-drop__text {
+    font-size: 11px;
+  }
+  .su-drop__text strong {
+    font-size: 13px;
+  }
+}
