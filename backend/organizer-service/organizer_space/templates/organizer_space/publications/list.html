@@ -1,0 +1,40 @@
+{% extends "organizer_base.html" %}
+{% load findopp_tags %}
+{% block title %}My publications{% endblock %}
+
+{% block content %}
+<header class="page-head">
+  <h2 class="display">My <em>publications</em></h2>
+  <p class="muted">Manage your opportunities, from draft to publication.</p>
+</header>
+
+<nav class="tabs" aria-label="Status">
+  {% for tab in tabs %}
+    <a href="?{% query status=tab.value page=None %}" class="tab {% if tab.active %}is-active{% endif %}">
+      {{ tab.label }} · {{ tab.count }}</a>
+  {% endfor %}
+</nav>
+
+<form method="get" class="filters" data-autosubmit>
+  {{ form.search }}
+  {{ form.status }}
+  {{ form.category }}
+  {{ form.ordering }}
+  <noscript><button class="btn btn--ghost">Filter</button></noscript>
+</form>
+
+{% include "organizer_space/publications/_table.html" %}
+
+<footer class="pagination">
+  <span class="muted small">Showing {{ publications|length }} of {{ count }} publication{{ count|pluralize }}</span>
+  <div class="pagination__pages">
+    {% if pages.has_previous %}<a class="page-btn" href="?{% query page=pages.previous %}">Previous</a>
+    {% else %}<span class="page-btn is-disabled">Previous</span>{% endif %}
+    {% for n in pages.range %}
+      <a class="page-btn page-btn--num {% if n == pages.number %}is-active{% endif %}" href="?{% query page=n %}">{{ n }}</a>
+    {% endfor %}
+    {% if pages.has_next %}<a class="page-btn" href="?{% query page=pages.next %}">Next</a>
+    {% else %}<span class="page-btn is-disabled">Next</span>{% endif %}
+  </div>
+</footer>
+{% endblock %}

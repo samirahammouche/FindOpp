@@ -1,0 +1,37 @@
+{% load findopp_tags %}
+{% with current=request.resolver_match.url_name %}
+<aside class="sidebar">
+  <a href="{% url 'organizer_space:overview' %}" class="sidebar__brand">{% logo "light" 40 %}</a>
+  <span class="sidebar__role">Organizer</span>
+
+  <nav class="sidebar__nav" aria-label="Organizer space">
+    <a href="{% url 'organizer_space:overview' %}" class="nav-item {% if current == 'overview' %}is-active{% endif %}">
+      {% doodle "overview" "yellow" 30 %} Overview</a>
+    <a href="{% url 'organizer_space:publications' %}" class="nav-item {% if current == 'publications' or current == 'publication_edit' %}is-active{% endif %}">
+      {% doodle "book" "blue" 30 %} My publications</a>
+    <a href="{% url 'organizer_space:publication_create' %}" class="nav-item {% if current == 'publication_create' %}is-active{% endif %}">
+      {% doodle "code" "blue" 30 %} Create a publication</a>
+    <a href="{% url 'organizer_space:profile' %}" class="nav-item {% if current == 'profile' or current == 'profile_edit' %}is-active{% endif %}">
+      {% doodle "cap" "lavender" 30 %} Profile</a>
+    <a href="{% url 'organizer_space:profile' %}#settings" class="nav-item">
+      {% doodle "puzzle" "pink" 30 %} Settings</a>
+  </nav>
+
+  <div class="sidebar__footer">
+    <div class="org-chip">
+      <span class="org-chip__logo">
+        {% if current_organization.logo_url %}<img src="{{ current_organization.logo_url|media }}" alt="">
+        {% else %}{% doodle "globe" "pink" 36 %}{% endif %}
+      </span>
+      <span>
+        <strong>{{ current_organization.name|default:current_email }}</strong>
+        <small>Organizer</small>
+      </span>
+    </div>
+    <form method="post" action="{% url 'accounts:logout' %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn--sidebar">{% icon "logout" %} Sign out</button>
+    </form>
+  </div>
+</aside>
+{% endwith %}

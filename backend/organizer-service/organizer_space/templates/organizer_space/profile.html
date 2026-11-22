@@ -1,0 +1,85 @@
+{% extends "organizer_base.html" %}
+{% load findopp_tags %}
+{% block title %}Profile & settings{% endblock %}
+
+{% block content %}
+<header class="page-head page-head--row">
+  <div>
+    <h2 class="display">Organization <em>profile</em></h2>
+    <p class="muted">Your organization’s public identity on FindOpp.</p>
+  </div>
+  <a href="{% url 'organizer_space:profile_edit' %}" class="btn btn--primary">Edit profile</a>
+</header>
+
+<article class="card profile">
+  <div class="profile__cover" {% if profile.cover_image_url %}style="background-image:url('{{ profile.cover_image_url|media }}')"{% endif %}></div>
+  <div class="profile__body">
+    <div class="profile__logo">
+      {% if profile.logo_url %}<img src="{{ profile.logo_url|media }}" alt="Logo of {{ profile.name }}">
+      {% else %}{% doodle "puzzle" "pink" 64 %}{% endif %}
+    </div>
+    <div class="profile__head">
+      <div>
+        <h3 class="h2">{{ profile.name }}</h3>
+        <p class="muted small">{{ profile.org_type_label }} · {{ profile.city }}</p>
+      </div>
+      {% if profile.verification_status == "verified" %}<span class="status status--approved">✓ Verified</span>
+      {% elif profile.verification_status == "rejected" %}<span class="status status--rejected">Verification refused</span>
+      {% else %}<span class="status status--pending">Verification pending</span>{% endif %}
+    </div>
+    <p class="profile__text">{{ profile.description|default:"Add a description so students know who you are."|linebreaksbr }}</p>
+    <ul class="profile__links">
+      {% if profile.website %}<li><a href="{{ profile.website }}" target="_blank" rel="noopener">{{ profile.website|cut:"https://"|cut:"http://" }} ↗</a></li>{% endif %}
+      <li><a href="mailto:{{ profile.contact_email }}">{{ profile.contact_email }}</a></li>
+      {% if profile.linkedin %}<li><a href="{{ profile.linkedin }}" target="_blank" rel="noopener">LinkedIn ↗</a></li>{% endif %}
+      {% if profile.instagram %}<li><a href="{{ profile.instagram }}" target="_blank" rel="noopener">Instagram ↗</a></li>{% endif %}
+    </ul>
+  </div>
+</article>
+
+<section class="section">
+  <header class="page-head" id="settings">
+    <h2 class="display">Space <em>settings</em></h2>
+  </header>
+  
+  <div class="settings-grid">
+    <section class="card setting">
+      <header>{% doodle "bell" "blue" 40 %}<h3 class="h4">Publication notifications</h3></header>
+      <p class="muted small">Receive an email when a publication’s status changes.</p>
+      <form method="post">
+        {% csrf_token %}<input type="hidden" name="section" value="notifications">
+        {% if settings.notify_status_changes %}
+          <button type="submit" class="chip chip--on">✓ Enabled</button>
+        {% else %}
+          <button type="submit" class="chip chip--off">Disabled</button>
+        {% endif %}
+      </form>
+    </section>
+  
+    <section class="card setting">
+      <header>{% doodle "book" "blue" 40 %}<h3 class="h4">Contact details and password</h3></header>
+      <p class="muted small">{{ settings.contact_email }}{% if settings.phone %} · {{ settings.phone }}{% endif %}</p>
+      <details class="setting__panel" {% if open_section == "contact" %}open{% endif %}>
+        <summary class="chip">Edit contact details</summary>
+        <form method="post" novalidate>
+          {% csrf_token %}<input type="hidden" name="section" value="contact">
+          {% include "organizer_space/publications/_field.html" with field=contact_form.contact_email %}
+          {% include "organizer_space/publications/_field.html" with field=contact_form.phone %}
+          <button type="submit" class="btn btn--primary btn--sm">Save</button>
+        </form>
+      </details>
+      <details class="setting__panel" {% if open_section == "password" %}open{% endif %}>
+        <summary class="chip">Change password</summary>
+        <form method="post" novalidate>
+          {% csrf_token %}<input type="hidden" name="section" value="password">
+          {% if password_form.non_field_errors %}<div class="notice notice--error">{{ password_form.non_field_errors|join:" " }}</div>{% endif %}
+          {% include "organizer_space/publications/_field.html" with field=password_form.old_password %}
+          {% include "organizer_space/publications/_field.html" with field=password_form.new_password %}
+          {% include "organizer_space/publications/_field.html" with field=password_form.confirm_password %}
+          <button type="submit" class="btn btn--primary btn--sm">Change password</button>
+        </form>
+      </details>
+    </section>
+  </div>
+</section>
+{% endblock %}

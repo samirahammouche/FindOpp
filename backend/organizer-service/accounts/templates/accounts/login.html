@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load findopp_tags %}
+{% block title %}Sign in{% endblock %}
+{% block body_class %}page-center page-login{% endblock %}
+
+{% block body %}
+<main class="card login">
+  {% logo "dark" 48 %}
+  <h1 class="h2">Sign in to your <em class="serif">organizer space</em></h1>
+  <p class="muted small">Publish and manage your opportunities on FindOpp.</p>
+  {% include "partials/_messages.html" %}
+  <form method="post" novalidate>
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ next }}">
+    {% if form.non_field_errors %}<div class="notice notice--error">{{ form.non_field_errors|join:" " }}</div>{% endif %}
+    {% include "organizer_space/publications/_field.html" with field=form.email %}
+    {% include "organizer_space/publications/_field.html" with field=form.password %}
+    <button type="submit" class="btn btn--primary btn--block">Sign in</button>
+  </form>
+  {% if demo_login %}
+  <form method="post" action="{% url 'accounts:demo_login' %}">
+    {% csrf_token %}<input type="hidden" name="next" value="{{ next }}">
+    <button type="submit" class="btn btn--ghost btn--block">Demo sign-in (development only)</button>
+  </form>
+  {% endif %}
+</main>
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends "organizer_base.html" %}
+{% load findopp_tags %}
+{% block title %}Overview{% endblock %}
+
+{% block content %}
+<section class="hero-banner">
+  <div>
+    <p class="eyebrow eyebrow--light">Overview</p>
+    <h2 class="hero-banner__title">Hello, {{ dashboard.organization.name }} 👋</h2>
+    <p class="hero-banner__text">Your next projects start here.</p>
+  </div>
+  <a href="{% url 'organizer_space:publication_create' %}" class="btn btn--lavender">{% icon "plus" %} New publication</a>
+</section>
+
+<section class="kpis">
+  <article class="kpi">
+    <header><span>Live publications</span>{% doodle "book" "blue" 44 %}</header>
+    <strong class="kpi__value">{{ kpis.live_publications|spaced }}</strong>
+    <p class="kpi__note kpi__note--good">{{ kpis.new_live_this_month }} new this month</p>
+  </article>
+  <article class="kpi">
+    <header><span>Total views</span>{% doodle "globe" "pink" 44 %}</header>
+    <strong class="kpi__value">{{ kpis.total_views|spaced }}</strong>
+    {% if kpis.views_change_percent is None %}
+      <p class="kpi__note">No data for the previous period</p>
+    {% else %}
+      <p class="kpi__note {% if kpis.views_change_percent >= 0 %}kpi__note--good{% else %}kpi__note--bad{% endif %}">
+        {% if kpis.views_change_percent >= 0 %}+{% endif %}{{ kpis.views_change_percent }}% over the period</p>
+    {% endif %}
+  </article>
+  <article class="kpi">
+    <header><span>Saves</span>{% doodle "medal" "mint" 44 %}</header>
+    <strong class="kpi__value">{{ kpis.saves|spaced }}</strong>
+    <p class="kpi__note kpi__note--good">+{{ kpis.saves_this_month|spaced }} this month</p>
+  </article>
+  <article class="kpi">
+    <header><span>Pending publications</span>{% doodle "calendar" "yellow" 44 %}</header>
+    <strong class="kpi__value">{{ kpis.pending_publications }}</strong>
+    <p class="kpi__note kpi__note--warn">Under review</p>
+  </article>
+</section>
+
+<section class="card chart-card">
+  <h3 class="h3">Views over 30 days</h3>
+  {% if chart %}
+  <p class="muted small">{{ chart.period }}</p>
+  <svg class="chart" viewBox="-60 -20 {{ chart.width|add:80 }} {{ chart.height|add:60 }}" role="img"
+       aria-label="{{ chart.total }} views over 30 days">
+    <defs>
+      <linearGradient id="area" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#1E4E8C" stop-opacity=".16"/><stop offset="1" stop-color="#1E4E8C" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    {% for tick in chart.ticks %}
+      <line x1="0" x2="{{ chart.width }}" y1="{{ tick.y }}" y2="{{ tick.y }}" class="chart__grid"/>
+      <text x="-14" y="{{ tick.y }}" class="chart__label" text-anchor="end" dominant-baseline="middle">{{ tick.value }}</text>
+    {% endfor %}
+    <polygon points="{{ chart.area }}" fill="url(#area)"/>
+    <polyline points="{{ chart.line }}" class="chart__line"/>
+    {% for label in chart.labels %}
+      <text x="{{ label.x }}" y="{{ chart.height|add:32 }}" class="chart__label" text-anchor="middle">{{ label.text }}</text>
+    {% endfor %}
+  </svg>
+  {% else %}
+    <p class="empty">No views yet. They will appear here once your publications are online.</p>
+  {% endif %}
+</section>
+
+<section class="section">
+  <header class="section__head">
+    <div>
+      <h2 class="display">My <em>publications</em></h2>
+      <p class="muted">Manage your opportunities, from draft to publication.</p>
+    </div>
+    <a href="{% url 'organizer_space:publications' %}" class="btn btn--ghost">See all {{ publications_count }} {% icon "arrow" %}</a>
+  </header>
+  {% include "organizer_space/publications/_table.html" %}
+</section>
+{% endblock %}

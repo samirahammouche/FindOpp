@@ -1,0 +1,50 @@
+{% load findopp_tags %}
+<div class="card table-card">
+  {% if publications %}
+  <table class="table">
+    <thead>
+      <tr><th>Publication</th><th>Category</th><th>Status</th><th>Deadline</th><th>Views</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+    {% for p in publications %}
+      <tr>
+        <td><a href="{% url 'organizer_space:publication_edit' p.id %}" class="table__title">{{ p.title }}</a></td>
+        <td><span class="{{ p.category|category_class }}">{{ p.category_label }}</span></td>
+        <td><span class="{{ p.status|status_class }}">{{ p.status_label }}</span></td>
+        <td class="muted">{{ p.application_deadline|short_date }}</td>
+        <td><strong>{% if p.views_count %}{{ p.views_count|spaced }}{% else %}—{% endif %}</strong></td>
+        <td class="table__actions">
+          {% if p.status != "expired" %}<a href="{% url 'organizer_space:publication_edit' p.id %}">Edit</a> ·{% endif %}
+          <details class="menu">
+            <summary aria-label="More actions">⋯</summary>
+            <div class="menu__list">
+              {% if p.status == "draft" or p.status == "rejected" %}
+              <form method="post" action="{% url 'organizer_space:publication_action' p.id 'submit' %}">
+                {% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
+                <button type="submit">Submit for review</button>
+              </form>
+              {% endif %}
+              <form method="post" action="{% url 'organizer_space:publication_action' p.id 'duplicate' %}">
+                {% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
+                <button type="submit">Duplicate</button>
+              </form>
+              <form method="post" action="{% url 'organizer_space:publication_action' p.id 'delete' %}"
+                    data-confirm="Delete “{{ p.title }}”? This cannot be undone.">
+                {% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
+                <button type="submit" class="danger">Delete</button>
+              </form>
+            </div>
+          </details>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <div class="empty">
+      {% doodle "book" "blue" 56 %}
+      <p><strong>No publications here yet.</strong><br>Create your first opportunity in a few minutes.</p>
+      <a href="{% url 'organizer_space:publication_create' %}" class="btn btn--primary">{% icon "plus" %} New publication</a>
+    </div>
+  {% endif %}
+</div>
