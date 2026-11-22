@@ -6,7 +6,7 @@ venv/
 
 # Environment variables (secrets)
 .env
-
+test-venv/
 # Databases
 *.sqlite3
 *.db
