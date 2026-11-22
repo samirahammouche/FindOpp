@@ -1,0 +1,161 @@
+{% extends "organizer_base.html" %}
+{% load findopp_tags %}
+{% block title %}{% if publication %}Edit publication{% else %}Create a publication{% endif %}{% endblock %}
+
+{% block content %}
+<form method="post" action="{{ action_url|default:'' }}" enctype="multipart/form-data" class="publication-form" novalidate
+      data-organization="{{ current_organization.name }}" data-verified="{{ current_organization.is_verified|yesno:'1,0' }}">
+  {% csrf_token %}
+
+  <header class="page-head page-head--row">
+    <div>
+      <h2 class="display">{% if publication %}Edit a <em>publication</em>{% else %}Create a <em>publication</em>{% endif %}</h2>
+      <p class="muted">All the details in one place before you submit for review.</p>
+    </div>
+    <span class="{{ publication.status|default:'draft'|status_class }}">{{ publication.status_label|default:"Draft" }}</span>
+  </header>
+
+  {% if publication.status == "rejected" and publication.rejection_reason %}
+    <div class="notice notice--error"><strong>Rejected:</strong> {{ publication.rejection_reason }}</div>
+  {% endif %}
+  {% if form.non_field_errors %}<div class="notice notice--error">{{ form.non_field_errors|join:" " }}</div>{% endif %}
+
+  {# --- Category cards --- #}
+  <fieldset class="type-cards">
+    <legend class="sr-only">Type of opportunity</legend>
+    {% for radio in form.category %}
+      <label class="type-card type-card--{{ radio.data.value }}">
+        {{ radio.tag }}
+        {% category_doodle radio.data.value 52 %}
+        <strong>{{ radio.choice_label }}</strong>
+        <small class="muted">Select this type</small>
+      </label>
+    {% endfor %}
+  </fieldset>
+
+  <div class="form-grid">
+    <div class="card form-card">
+      {# --- Opportunity details --- #}
+      <h3 class="h3 form-card__title">Opportunity details</h3>
+      {% include "organizer_space/publications/_field.html" with field=form.title %}
+      {% include "organizer_space/publications/_field.html" with field=form.short_description %}
+
+      <div class="field {% if form.full_description.errors %}has-error{% endif %}">
+        <label for="{{ form.full_description.id_for_label }}">{{ form.full_description.label }}</label>
+        <div class="editor">
+          <div class="editor__toolbar" data-editor="{{ form.full_description.id_for_label }}">
+            <button type="button" data-wrap="**"><b>B</b></button>
+            <button type="button" data-wrap="_"><i>I</i></button>
+            <button type="button" data-wrap="__"><u>U</u></button>
+            <button type="button" data-prefix="## ">Heading</button>
+            <button type="button" data-prefix="• ">List</button>
+            <button type="button" data-link>Link</button>
+          </div>
+          {{ form.full_description }}
+        </div>
+        {% for error in form.full_description.errors %}<small class="field__error">{{ error }}</small>{% endfor %}
+      </div>
+
+      <div class="field">
+        <label>Cover image</label>
+        <label class="upload" for="{{ form.cover_image.id_for_label }}">
+          <span class="upload__thumb" data-cover-thumb
+                {% if publication.cover_image_url %}style="background-image:url('{{ publication.cover_image_url|media }}')"{% endif %}>
+            {% if not publication.cover_image_url %}{% icon "image" 26 %}{% endif %}
+          </span>
+          <span>
+            <strong data-cover-name>{% if publication.cover_image_url %}Current image{% else %}Choose an image{% endif %}</strong>
+            <small class="muted">JPG, PNG or WEBP</small>
+            <span class="link">{% if publication.cover_image_url %}Replace image{% else %}Upload{% endif %}</span>
+          </span>
+          <input type="file" name="cover_image" id="{{ form.cover_image.id_for_label }}" accept="image/png,image/jpeg,image/webp" hidden>
+        </label>
+        {% for error in form.cover_image.errors %}<small class="field__error">{{ error }}</small>{% endfor %}
+      </div>
+
+      <div class="field-row field-row--location">
+        {% include "organizer_space/publications/_field.html" with field=form.location %}
+        <label class="switch">{{ form.is_remote }}<span class="switch__track"></span> Remote</label>
+      </div>
+      <small class="muted hint">Hybrid format: give the place and turn on “Remote”.</small>
+      {% include "organizer_space/publications/_field.html" with field=form.application_link %}
+
+      {# --- Eligibility --- #}
+      <h3 class="h3 form-card__title form-card__title--sep">Eligibility</h3>
+      <div class="pills">
+        {% for box in form.study_levels %}<label class="pill">{{ box.tag }}<span>{{ box.choice_label }}</span></label>{% endfor %}
+      </div>
+      {% for error in form.study_levels.errors %}<small class="field__error">{{ error }}</small>{% endfor %}
+
+      <div class="field">
+        <label for="tags-input">Fields of study</label>
+        <div class="tags" data-tags="{{ form.fields_of_study.id_for_label }}">
+          <input type="text" id="tags-input" placeholder="Type a field and press Enter">
+        </div>
+        {{ form.fields_of_study.as_hidden }}
+      </div>
+      {% include "organizer_space/publications/_field.html" with field=form.eligible_region %}
+      <label class="check">{{ form.open_to_all_nationalities }} Open to all nationalities</label>
+
+      {# --- Funding and dates --- #}
+      <h3 class="h3 form-card__title form-card__title--sep">Funding and dates</h3>
+      <div class="pills pills--4">
+        {% for radio in form.funding_type %}<label class="pill pill--soft">{{ radio.tag }}<span>{{ radio.choice_label }}</span></label>{% endfor %}
+      </div>
+      {% for error in form.funding_type.errors %}<small class="field__error">{{ error }}</small>{% endfor %}
+      <div class="field-row field-row--amount">
+        {% include "organizer_space/publications/_field.html" with field=form.amount %}
+        {% include "organizer_space/publications/_field.html" with field=form.currency %}
+      </div>
+      <div class="field-row">
+        {% include "organizer_space/publications/_field.html" with field=form.start_date %}
+        {% include "organizer_space/publications/_field.html" with field=form.end_date %}
+      </div>
+      {% include "organizer_space/publications/_field.html" with field=form.application_deadline %}
+    </div>
+
+    {# --- Live preview --- #}
+    <aside class="preview-col">
+      <div class="card preview">
+        <h3 class="h3">Live preview</h3>
+        <div class="preview__cover" data-preview="cover"
+             {% if publication.cover_image_url %}style="background-image:url('{{ publication.cover_image_url|media }}')"{% endif %}></div>
+        <span class="badge" data-preview="category"></span>
+        <p class="preview__org">{{ current_organization.name }} {% if current_organization.is_verified %}✓{% endif %}</p>
+        <h4 class="preview__title" data-preview="title">Publication title</h4>
+        <p class="muted" data-preview="short">Short description</p>
+        <p class="preview__meta" data-preview="location"></p>
+        <p class="preview__money" data-preview="money"></p>
+        <p class="preview__meta" data-preview="dates"></p>
+        <p class="preview__deadline" data-preview="deadline"></p>
+        <span class="btn btn--primary btn--block">View opportunity →</span>
+      </div>
+      <div class="card info-card">
+        {% doodle "book" "blue" 44 %}
+        <h4 class="h3">Clear, useful, accessible.</h4>
+        <p class="muted small">The preview reflects your category and funding selections. Your publication
+          will be reviewed before it goes live.</p>
+      </div>
+    </aside>
+  </div>
+
+  <div class="form-actions">
+    <p class="muted small">The draft stays private until it is reviewed.</p>
+    <button type="submit" name="action" value="draft" class="btn btn--white">Save draft</button>
+    {% if not publication or publication.status == "draft" or publication.status == "rejected" %}
+      <button type="submit" name="action" value="submit" class="btn btn--primary">Submit</button>
+    {% else %}
+      <button type="submit" name="action" value="draft" class="btn btn--primary"
+              title="Your changes will be reviewed again">Save and send for review</button>
+    {% endif %}
+  </div>
+
+  <div class="notice notice--lavender">
+    {% doodle "cap" "lavender" 36 %}
+    <div><strong>One final check before your opportunity goes live.</strong>
+      <p class="muted small">Our team checks every publication for clarity, authenticity and accurate dates.</p></div>
+  </div>
+</form>
+{% endblock %}
+
+{% block scripts %}{% load static %}<script src="{% static 'js/publication_form.js' %}"></script>{% endblock %}

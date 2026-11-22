@@ -1,0 +1,73 @@
+# Organizer microservice + the infrastructure it needs (one machine, for development / demo).
+#   cp .env.example .env
+#   docker compose up --build -d
+#   docker compose exec organizer-service-1 python manage.py seed_demo
+#
+#   http://localhost/organizer/   organizer space (through Traefik)
+#   http://localhost:8080         Traefik dashboard   http://localhost:8500  Consul
+#   http://localhost:15672        RabbitMQ
+#
+# The Auth service of the team is reached with AUTH_API_URL (its own server / compose file).
+
+x-env: &env
+  DJANGO_DEBUG: ${DJANGO_DEBUG:-0}
+  DEMO_LOGIN: ${DEMO_LOGIN:-1}
+  JWT_SECRET: ${JWT_SECRET:-dev-shared-secret-change-me}
+  INTERNAL_API_KEY: ${INTERNAL_API_KEY:-dev-internal-key-change-me}
+  RABBITMQ_URL: amqp://${RABBITMQ_USER:-findopp}:${RABBITMQ_PASSWORD:-findopp}@rabbitmq:5672/
+  CONSUL_URL: http://consul:8500
+  AUTH_API_URL: ${AUTH_API_URL:-}
+  SERVICE_PORT: "8000"
+  DATABASE_PATH: /data/organizer.sqlite3
+
+services:
+  traefik:
+    image: traefik:v3.1
+    command: --configFile=/etc/traefik/traefik.yml
+    volumes: ["./infra/traefik.yml:/etc/traefik/traefik.yml:ro"]
+    ports: ["80:80", "8080:8080"]
+    depends_on: [consul]
+
+  consul:
+    image: hashicorp/consul:1.19
+    command: agent -dev -client=0.0.0.0 -ui
+    ports: ["8500:8500"]
+
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-findopp}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-findopp}
+    ports: ["5672:5672", "15672:15672"]
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      retries: 10
+
+  # 2 instances of the organizer service: Traefik balances the load between them
+  organizer-service-1:
+    build: .
+    environment: { <<: *env, SERVICE_HOST: organizer-service-1 }
+    volumes: &volumes ["organizer-data:/data", "organizer-media:/app/media"]
+    depends_on: { rabbitmq: { condition: service_healthy }, consul: { condition: service_started } }
+    restart: unless-stopped
+
+  organizer-service-2:
+    build: .
+    environment: { <<: *env, SERVICE_HOST: organizer-service-2 }
+    volumes: *volumes
+    depends_on: [organizer-service-1]
+    restart: unless-stopped
+
+  # RabbitMQ worker: organizer.registered, publication.status_changed, organizer.verified
+  organizer-worker:
+    build: .
+    command: sh -c "sleep 10 && python manage.py consume_events"
+    environment: { <<: *env, CONSUL_URL: "" }
+    volumes: *volumes
+    depends_on: [organizer-service-1]
+    restart: unless-stopped
+
+volumes:
+  organizer-data:
+  organizer-media:

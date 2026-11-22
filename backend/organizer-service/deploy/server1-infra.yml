@@ -1,0 +1,35 @@
+# SERVER 1 – infrastructure: Traefik (reverse proxy / load balancer), Consul (registry), RabbitMQ (broker)
+#   docker compose --env-file .env -f server1-infra.yml up -d
+services:
+  consul:
+    image: hashicorp/consul:1.19
+    command: agent -server -bootstrap-expect=1 -client=0.0.0.0 -bind=0.0.0.0 -advertise=${INFRA_IP} -ui -data-dir=/consul/data
+    ports: ["8500:8500"]
+    volumes: ["consul-data:/consul/data"]
+    restart: unless-stopped
+
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    ports: ["5672:5672", "15672:15672"]
+    volumes: ["rabbitmq-data:/var/lib/rabbitmq"]
+    restart: unless-stopped
+
+  traefik:
+    image: traefik:v3.1
+    command:
+      - --entrypoints.web.address=:80
+      - --api.dashboard=true
+      - --api.insecure=true
+      - --providers.consulcatalog.exposedbydefault=false
+      - --providers.consulcatalog.endpoint.address=consul:8500
+      - --accesslog=true
+    ports: ["80:80", "8080:8080"]
+    depends_on: [consul]
+    restart: unless-stopped
+
+volumes:
+  consul-data:
+  rabbitmq-data:

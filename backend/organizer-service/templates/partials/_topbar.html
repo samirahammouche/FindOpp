@@ -1,0 +1,12 @@
+{% load findopp_tags %}
+<header class="topbar">
+  <h1 class="topbar__title">Organizer space</h1>
+  <form class="topbar__search" method="get" action="{% url 'organizer_space:publications' %}" role="search">
+    {% doodle "book" "blue" 30 %}
+    <input type="search" name="search" placeholder="Search publications…" value="{{ request.GET.search }}"
+           aria-label="Search publications">
+  </form>
+  <a href="{% url 'organizer_space:profile' %}#settings" class="topbar__bell" title="Notifications">
+    {% doodle "bell" "blue" 34 %}
+  </a>
+</header>

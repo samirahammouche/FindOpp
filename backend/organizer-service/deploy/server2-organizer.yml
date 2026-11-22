@@ -1,0 +1,33 @@
+# SERVER 2 – Organizer microservice (pages + REST API) and its RabbitMQ worker
+#   docker compose --env-file .env -f server2-organizer.yml up -d --build
+x-env: &env
+  DJANGO_DEBUG: "0"
+  DEMO_LOGIN: "0"
+  JWT_SECRET: ${JWT_SECRET}
+  INTERNAL_API_KEY: ${INTERNAL_API_KEY}
+  RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@${INFRA_IP}:5672/
+  CONSUL_URL: http://${INFRA_IP}:8500
+  AUTH_API_URL: ${AUTH_API_URL}
+  SERVICE_HOST: ${ORGANIZER_IP}      # address registered in Consul, used by Traefik
+  SERVICE_PORT: "8000"
+  DATABASE_PATH: /data/organizer.sqlite3
+
+services:
+  organizer-service:
+    build: ..
+    ports: ["8000:8000"]
+    environment: *env
+    volumes: ["organizer-data:/data", "organizer-media:/app/media"]
+    restart: unless-stopped
+
+  organizer-worker:
+    build: ..
+    command: sh -c "sleep 10 && python manage.py consume_events"
+    environment: { <<: *env, CONSUL_URL: "" }
+    volumes: ["organizer-data:/data", "organizer-media:/app/media"]
+    depends_on: [organizer-service]
+    restart: unless-stopped
+
+volumes:
+  organizer-data:
+  organizer-media:

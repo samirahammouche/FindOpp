@@ -1,0 +1,33 @@
+{% extends "organizer_base.html" %}
+{% block title %}Edit profile{% endblock %}
+
+{% block content %}
+<header class="page-head">
+  <h2 class="display">Edit your <em>profile</em></h2>
+  <p class="muted">These details come from your account creation. Keep them up to date.</p>
+</header>
+
+<form method="post" enctype="multipart/form-data" class="card form-card form-card--narrow" novalidate>
+  {% csrf_token %}
+  {% if form.non_field_errors %}<div class="notice notice--error">{{ form.non_field_errors|join:" " }}</div>{% endif %}
+  <div class="field-row">
+    {% include "organizer_space/publications/_field.html" with field=form.name %}
+    {% include "organizer_space/publications/_field.html" with field=form.org_type %}
+  </div>
+  {% include "organizer_space/publications/_field.html" with field=form.city %}
+  {% include "organizer_space/publications/_field.html" with field=form.description %}
+  {% include "organizer_space/publications/_field.html" with field=form.website %}
+  <div class="field-row">
+    {% include "organizer_space/publications/_field.html" with field=form.linkedin %}
+    {% include "organizer_space/publications/_field.html" with field=form.instagram %}
+  </div>
+  <div class="field-row">
+    {% include "organizer_space/publications/_field.html" with field=form.logo %}
+    {% include "organizer_space/publications/_field.html" with field=form.cover_image %}
+  </div>
+  <div class="form-actions form-actions--inline">
+    <a href="{% url 'organizer_space:profile' %}" class="btn btn--white">Cancel</a>
+    <button type="submit" class="btn btn--primary">Save profile</button>
+  </div>
+</form>
+{% endblock %}
