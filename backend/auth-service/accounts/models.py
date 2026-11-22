@@ -1,13 +1,18 @@
-from django.db import models
-
-# Create your models here.
-from django.db import models
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
     PermissionsMixin,
 )
+from django.conf import settings
+from django.db import models
 from django.utils import timezone
+from pathlib import Path
+from uuid import uuid4
+
+
+def organization_document_path(instance, filename):
+    extension = Path(filename).suffix.lower()
+    return f"organization_documents/{uuid4().hex}{extension}"
 
 
 class UserManager(BaseUserManager):
@@ -68,3 +73,35 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return f"{self.email} ({self.role})"
+
+
+class Organization(models.Model):
+    class Type(models.TextChoices):
+        UNIVERSITY = "UNIVERSITY", "University"
+        COMPANY = "COMPANY", "Company"
+        NGO = "NGO", "NGO"
+        CLUB = "CLUB", "Club"
+
+    class VerificationStatus(models.TextChoices):
+        PENDING = "PENDING", "Pending"
+        APPROVED = "APPROVED", "Approved"
+        REJECTED = "REJECTED", "Rejected"
+
+    organizer = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="organization",
+    )
+    name = models.CharField(max_length=200)
+    organization_type = models.CharField(max_length=20, choices=Type.choices)
+    city = models.CharField(max_length=100)
+    website = models.URLField(max_length=255)
+    official_document = models.FileField(upload_to=organization_document_path)
+    verification_status = models.CharField(
+        max_length=10,
+        choices=VerificationStatus.choices,
+        default=VerificationStatus.PENDING,
+    )
+
+    def __str__(self):
+        return self.name

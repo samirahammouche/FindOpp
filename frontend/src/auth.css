@@ -1,0 +1,512 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@1&family=Inter+Tight:wght@600;700&display=swap");
+
+.si {
+  --cream: #f4efe6;
+  --navy: #1e4e8c;
+  --ink: #101b35;
+  --muted: #6b7280;
+  --lilac: #ece6f6;
+  --lilac-badge: #b9a6e6;
+  --line: #e3dccf;
+
+  display: grid;
+  grid-template-columns: minmax(330px, 44%) minmax(0, 56%);
+  min-height: 100vh;
+  color: var(--ink);
+  background: var(--cream);
+  font-family: "DM Sans", system-ui, sans-serif;
+}
+
+.si-hero {
+  position: relative;
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  overflow: hidden;
+  padding: clamp(24px, 3vw, 48px);
+  color: #fff;
+  background-color: #15212b;
+  background-image:
+    radial-gradient(ellipse at 30% 31%, rgba(161, 197, 211, 0.3), transparent 16%),
+    radial-gradient(ellipse at 74% 52%, rgba(126, 67, 87, 0.45), transparent 24%),
+    radial-gradient(ellipse at 52% 78%, rgba(59, 83, 91, 0.8), transparent 34%),
+    linear-gradient(150deg, #25313a 0%, #111c25 62%, #26313b 100%);
+}
+
+.si-hero::before {
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(
+      168deg,
+      transparent 0 52px,
+      rgba(228, 235, 239, 0.08) 53px 56px,
+      transparent 57px 105px
+    ),
+    linear-gradient(180deg, transparent 42%, rgba(10, 12, 24, 0.45) 100%);
+  content: "";
+}
+
+.si-hero__shade {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(10, 12, 24, 0.35) 0%,
+    rgba(10, 12, 24, 0.06) 38%,
+    rgba(10, 12, 24, 0.74) 100%
+  );
+}
+
+.si-hero > * {
+  position: relative;
+  z-index: 1;
+}
+
+.si-brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.si-brand__mark {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border-radius: 8px;
+  background: var(--navy);
+  font: 700 18px "Inter Tight", sans-serif;
+}
+
+.si-brand__name {
+  font-size: 18px;
+  font-weight: 400;
+}
+
+.si-brand__name strong {
+  font-weight: 700;
+}
+
+.si-hero__tag {
+  margin: 14px 0 0;
+  color: #d3c5f2;
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.si-hero__badge {
+  position: absolute;
+  right: 12%;
+  bottom: 30%;
+  display: grid;
+  width: 52px;
+  height: 52px;
+  place-items: center;
+  border-radius: 16px;
+  background: var(--lilac-badge);
+}
+
+.si-hero__quote {
+  margin: auto 0 0;
+  font: 600 clamp(25px, 2.4vw, 34px) / 1.18 "Inter Tight", "DM Sans", sans-serif;
+  letter-spacing: -0.01em;
+}
+
+.si-hero__foot {
+  margin: 26px 0 0;
+  font-size: 10px;
+  opacity: 0.85;
+}
+
+.si-panel {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  padding: 30px clamp(24px, 5vw, 76px) 36px;
+}
+
+.si-back {
+  align-self: flex-start;
+  color: var(--navy);
+  font-size: 11px;
+  text-decoration: none;
+}
+
+.si-back:hover,
+.si-create:hover {
+  text-decoration: underline;
+}
+
+.si-form {
+  display: flex;
+  width: 100%;
+  max-width: 424px;
+  flex-direction: column;
+  margin: auto;
+  padding: 32px 0;
+}
+
+.si-form--signup {
+  max-width: 470px;
+  margin: 26px auto 0;
+  padding: 0 0 24px;
+}
+
+.si-eyebrow {
+  color: var(--navy);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.si-title {
+  margin: 13px 0 0;
+  font: 700 32px / 1.1 "Inter Tight", "DM Sans", sans-serif;
+  letter-spacing: -0.02em;
+}
+
+.si-title em {
+  font: italic 400 34px "Instrument Serif", Georgia, serif;
+  letter-spacing: 0;
+}
+
+.si-title--signup {
+  font-size: 31px;
+}
+
+.si-sub {
+  margin: 18px 0 34px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.si-sub--signup {
+  margin: 12px 0 20px;
+}
+
+.si-label {
+  margin-bottom: 7px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.si-input {
+  width: 100%;
+  min-width: 0;
+  height: 40px;
+  margin-bottom: 20px;
+  padding: 0 12px;
+  border: 1px solid #e6e5e3;
+  border-radius: 9px;
+  outline: none;
+  background: #fff;
+  color: var(--ink);
+  font-size: 12px;
+}
+
+.si-input:focus {
+  border-color: var(--navy);
+  box-shadow: 0 0 0 2px rgba(30, 78, 140, 0.12);
+}
+
+.si-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.si-grid > div {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.si-grid .si-input {
+  margin-bottom: 6px;
+}
+
+.si-select {
+  appearance: auto;
+}
+
+.si-hint {
+  margin: 0 0 15px;
+  color: #81879a;
+  font-size: 9px;
+}
+
+.si-hint--password {
+  margin-top: -15px;
+  margin-bottom: 18px;
+}
+
+.si-input--last {
+  margin-bottom: 20px;
+}
+
+.si-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: -5px 0 20px;
+  font-size: 10px;
+}
+
+.si-check {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.si-check input {
+  width: 12px;
+  height: 12px;
+  accent-color: var(--navy);
+}
+
+.si-link {
+  color: var(--navy);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.si-link-button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.si-note {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 20px;
+  padding: 12px;
+  border-radius: 10px;
+  background: var(--lilac);
+  font-size: 10px;
+}
+
+.si-note strong {
+  font-weight: 500;
+}
+
+.si-note span {
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.si-note--error {
+  background: #fbe9e7;
+  color: #9b2c1f;
+}
+
+.si-note--success {
+  background: #e8f4ec;
+  color: #24633d;
+}
+
+.si-note--signup {
+  margin: 0 0 14px;
+}
+
+.si-btn {
+  min-height: 42px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 9px;
+  background: var(--navy);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.si-btn:hover:not(:disabled) {
+  background: #173f73;
+}
+
+.si-btn:focus-visible,
+.si-link-button:focus-visible,
+.si-upload:focus-within {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.si-btn:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.si-create {
+  margin-top: 28px;
+  color: var(--navy);
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+}
+
+.si-foot {
+  margin: 22px 0 0;
+  color: var(--muted);
+  font-size: 9px;
+  text-align: center;
+}
+
+.si-upload {
+  position: relative;
+  display: flex;
+  min-height: 62px;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border: 1px dashed #cbd1db;
+  border-radius: 10px;
+  background: #f8f9fb;
+  cursor: pointer;
+}
+
+.si-upload input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+.si-upload__icon {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 8px;
+  background: #dce8f8;
+  color: var(--navy);
+}
+
+.si-upload__copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.si-upload__copy strong {
+  overflow: hidden;
+  color: var(--navy);
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.si-upload__copy small,
+.si-terms {
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.si-terms {
+  margin: 10px 0 0;
+  text-align: center;
+}
+
+.si-create--bottom {
+  margin-top: 16px;
+}
+
+.si-submission {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 28px;
+  padding: 20px;
+  border-radius: 12px;
+  background: var(--lilac);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.si-submission strong {
+  color: var(--ink);
+  font-size: 16px;
+}
+
+.si-submission span {
+  color: var(--muted);
+}
+
+.si-submission .si-create {
+  margin: 10px 0 0;
+}
+
+@media (max-width: 860px) {
+  .si {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .si-hero {
+    display: none;
+  }
+
+  .si-panel {
+    min-height: 100vh;
+    padding: 24px clamp(20px, 7vw, 48px);
+  }
+
+  .si-form {
+    max-width: 470px;
+    margin: auto;
+  }
+
+  .si-form--signup {
+    margin: 22px auto 0;
+  }
+}
+
+@media (max-width: 520px) {
+  .si-panel {
+    padding: 20px 18px;
+  }
+
+  .si-form {
+    padding: 24px 0;
+  }
+
+  .si-form--signup {
+    margin-top: 22px;
+    padding-top: 0;
+  }
+
+  .si-title,
+  .si-title--signup {
+    font-size: 29px;
+  }
+
+  .si-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .si-row {
+    font-size: 9px;
+  }
+
+  .si-input {
+    height: 44px;
+    font-size: 14px;
+  }
+}
