@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { useAuth, ROLE_HOME } from "../context/AuthContext";
 import heroImage from "../assets/screen.png";
 import aboutImage from "../assets/Real event photograph (3).png";
 import "./Home.css";
@@ -125,9 +124,6 @@ const scrollToList = () =>
   document.getElementById("opportunities")?.scrollIntoView({ behavior: "smooth" });
 
 export default function Home() {
-  const { user } = useAuth();
-  const space = user ? ROLE_HOME[user.role] || "/" : "/login";
-
   const [heroQuery, setHeroQuery] = useState("");
   const [heroType, setHeroType] = useState("all");
   const [query, setQuery] = useState("");
@@ -187,7 +183,7 @@ export default function Home() {
             <a href="#opportunities">Opportunities</a>
             <a href="#contact">Contact</a>
           </nav>
-          <Link to={space} className="hm-btn hm-btn--navy">
+          <Link to="/register" className="hm-btn hm-btn--navy">
             Organizer Space <Ico n="arrow" size={13} />
           </Link>
         </div>
