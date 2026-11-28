@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import brandLogo from "../assets/logo.svg";
 import heroImage from "../assets/screen.png";
 import aboutImage from "../assets/image 1.png";
 import heroDocument from "../assets/SVG.svg";
@@ -190,8 +191,7 @@ export default function Home() {
       <header className="hm-nav">
         <div className="hm-wrap hm-nav__in">
           <Link to="/" className="hm-brand">
-            <span className="hm-brand__mark">F</span>
-            <span>Find<strong>Opp</strong>.</span>
+            <img className="hm-brand__logo" src={brandLogo} alt="FindOpp" />
           </Link>
           <nav className="hm-nav__links" aria-label="Main">
             <a href="#about">About</a>
@@ -448,7 +448,7 @@ export default function Home() {
         <div className="hm-wrap hm-footer__grid">
           <div>
             <Link to="/" className="hm-brand hm-brand--light">
-              <span className="hm-brand__mark">F</span><span>Find<strong>Opp</strong>.</span>
+              <img className="hm-brand__logo" src={brandLogo} alt="FindOpp" />
             </Link>
             <p>Empowering university students to discover curated hackathons, scholarships, events and student clubs in Algeria and worldwide.</p>
           </div>
