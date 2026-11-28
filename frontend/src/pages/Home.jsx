@@ -1,17 +1,33 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import heroImage from "../assets/screen.png";
-import aboutImage from "../assets/Real event photograph (3).png";
+import aboutImage from "../assets/image 1.png";
+import heroDocument from "../assets/SVG.svg";
+import heroEnvelope from "../assets/SVG (1).svg";
+import heroSearch from "../assets/SVG (2).svg";
+import heroFunding from "../assets/Container.svg";
+import heroStudy from "../assets/Container (1).svg";
+import hackathonImage from "../assets/Vector (3).svg";
+import clubImage from "../assets/image 1.png";
+import scholarshipImage from "../assets/Vector (1).svg";
+import eventImage from "../assets/Vector.svg";
+import hackathonListingImage from "../assets/image 2.png";
+import eventListingImage from "../assets/Real event photograph (3).png";
+import clubListingImage from "../assets/Frame (1).png";
 import "./Home.css";
 
-/* ------------------------------------------------------------------ */
-/* Images: export them from Figma into frontend/public/images/        */
-/* Missing images fall back to a plain colour, nothing breaks.        */
-/* ------------------------------------------------------------------ */
 const IMG = {
   hero: heroImage,
   about: aboutImage,
 };
+
+const DECORATIVE_SVGS = [
+  { src: heroDocument, name: "document" },
+  { src: heroEnvelope, name: "envelope" },
+  { src: heroSearch, name: "search" },
+  { src: heroFunding, name: "funding" },
+  { src: heroStudy, name: "study" },
+];
 
 /* ------------------------------------------------------------------ */
 /* Static sample data. Replace with calls to /api/events when the     */
@@ -37,39 +53,39 @@ const LISTINGS = [
     title: "Annual AI & Robotics Global Hackathon 2025",
     place: "Virtual & Cambridge, MA", reward: "$50,000 Pool", date: "Nov 15 – 17, 2025",
     open: false, levels: ["Bachelor", "Master", "PhD"], funding: null, region: "United States",
-    image: "/images/opportunities/hackathon.jpg",
+    image: hackathonListingImage,
   },
   {
     id: 2, category: "scholarship", org: "Sorbonne & Paris Foundation",
     title: "Applied AI & Sciences Academic Excellence Grant",
     place: "Paris, France", reward: "Full Tuition + $2,000/mo", date: "Oct 20, 2025",
     open: false, levels: ["Master", "PhD"], funding: "Full tuition", region: "France",
-    image: "/images/opportunities/scholarship.jpg",
+    image: aboutImage,
   },
   {
     id: 3, category: "event", org: "Paris Research Institute",
     title: "Women in Data Science Summit 2026",
     place: "Berlin, Germany", reward: "Free + travel grants", date: "Jan 14, 2027",
     open: true, levels: ["Bachelor", "Master"], funding: "Partial Grant", region: "Germany",
-    image: "/images/opportunities/event.jpg",
+    image: eventListingImage,
   },
   {
     id: 4, category: "club", org: "Global Tech Leadership Council",
     title: "Executive Student Board & Fellowship 2025–2026",
     place: "Worldwide (Remote)", reward: "$4,000 Project Budget", date: "Oct 03, 2025",
     open: false, levels: ["Bachelor"], funding: "Monthly stipend", region: "Remote / Worldwide",
-    image: "/images/opportunities/club.jpg",
+    image: clubListingImage,
   },
 ];
 
 const OFFERS = [
-  { icon: "code", title: "Hackathons", cat: "hackathon", link: "Explore Events",
+  { image: hackathonImage, title: "Hackathons", cat: "hackathon", link: "Explore Events",
     text: "Build projects in 48-hour sprints, collaborate with multidisciplinary peers, and win grand cash prizes." },
-  { icon: "users", title: "Student Clubs", cat: "club", link: "Explore Clubs",
+  { image: clubImage, title: "Student Clubs", cat: "club", link: "Explore Clubs",
     text: "Find executive boards, special interest societies, and student associations across campus chapters." },
-  { icon: "cap", title: "Scholarships & Grants", cat: "scholarship", link: "Explore Grants",
+  { image: scholarshipImage, title: "Scholarships & Grants", cat: "scholarship", link: "Explore Grants",
     text: "Access merit and financial need academic stipends, and fully-funded corporate grants." },
-  { icon: "flask", title: "Events & Conferences", cat: "event", link: "Explore Internships",
+  { image: eventImage, title: "Events & Conferences", cat: "event", link: "Explore Internships",
     text: "Gain practical industry work experience, research fellowships, and mentorship from lead scientists." },
 ];
 
@@ -191,6 +207,11 @@ export default function Home() {
 
       {/* ---------- Hero ---------- */}
       <section className="hm-hero" style={{ "--img": `url(${IMG.hero})` }}>
+        <div className="hm-hero__decor" aria-hidden="true">
+          {DECORATIVE_SVGS.map(({ src, name }) => (
+            <img key={name} className={`hm-hero__detail--${name}`} src={src} alt="" />
+          ))}
+        </div>
         <div className="hm-wrap hm-hero__in">
           <h1>Discover Your Next <br />Opportunity</h1>
           <p>Explore top hackathons, campus clubs, exclusive scholarships, research internships, and career programs all in one unified ecosystem.</p>
@@ -245,7 +266,7 @@ export default function Home() {
 
           <div className="hm-about__media">
             <span className="hm-orb"><Ico n="cap" size={16} /></span>
-            <div className="hm-about__img" style={{ backgroundImage: `url(${IMG.about})` }} role="img" aria-label="Students studying together" />
+            <div className="hm-about__img" style={{ backgroundImage: `url("${IMG.about}")` }} role="img" aria-label="Students studying together" />
             <div className="hm-float hm-float--top">
               <span className="hm-float__check"><Ico n="check" size={14} /></span>
               <div><strong>98% verified</strong><small>Find out more with confidence</small></div>
@@ -266,7 +287,7 @@ export default function Home() {
           <div className="hm-offer__grid">
             {OFFERS.map((o) => (
               <article key={o.title} className="hm-offer__card">
-                <span className="hm-offer__ring"><Ico n={o.icon} size={34} /></span>
+                <span className="hm-offer__ring"><img className="hm-offer__art" src={o.image} alt="" /></span>
                 <h3>{o.title}</h3>
                 <p>{o.text}</p>
                 <button type="button" className="hm-link" onClick={() => pickCategory(o.cat)}>
@@ -359,7 +380,7 @@ export default function Home() {
                   <article key={l.id} className={`hm-card ${l.featured ? "hm-card--featured" : ""}`}>
                     {l.featured && <div className="hm-card__badge">★ FEATURED</div>}
                     <div className="hm-card__row">
-                      <div className="hm-card__thumb" style={{ backgroundImage: `url(${l.image})` }} />
+                      <div className="hm-card__thumb" style={{ backgroundImage: `url("${l.image}")` }} />
                       <div className="hm-card__main">
                         <div className="hm-card__top">
                           <span className={`hm-kind hm-kind--${l.category}`}>{TAG[l.category]}</span>
@@ -407,6 +428,11 @@ export default function Home() {
 
       {/* ---------- Call to action ---------- */}
       <section className="hm-cta">
+        <div className="hm-cta__decor" aria-hidden="true">
+          {DECORATIVE_SVGS.filter(({ name }) => name !== "document").map(({ src, name }) => (
+            <img key={name} className={`hm-cta__detail--${name}`} src={src} alt="" />
+          ))}
+        </div>
         <div className="hm-wrap">
           <h2>Make your next move count.</h2>
           <p>Your next life-changing conference keynote, inspiring hackathon, or fully-funded global scholarship is just one discovery away.</p>
